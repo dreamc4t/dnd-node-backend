@@ -2,6 +2,7 @@ import express, { Express, Request, Response } from 'express'
 import dotenv from 'dotenv'
 import mongoose from 'mongoose'
 import { itemRouter, shopRouter } from './routes'
+import cors from 'cors'
 
 dotenv.config()
 
@@ -17,6 +18,12 @@ app.get('/', (req: Request, res: Response) => {
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`)
 })
+
+const corsOptions = {
+  origin: 'http://localhost:3000',
+}
+
+app.use(cors(corsOptions))
 
 mongoose
   .connect(
