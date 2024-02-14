@@ -1,1 +1,3 @@
-export { Item } from './item'
+export { Shop } from './Shop'
+export { User } from './User'
+export { Item } from './Item'
