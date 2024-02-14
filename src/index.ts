@@ -1,7 +1,6 @@
 import express, { Express, Request, Response } from 'express'
 import dotenv from 'dotenv'
 import mongoose from 'mongoose'
-import { Item } from './models'
 import { itemRouter, shopRouter } from './routes'
 
 dotenv.config()
@@ -30,19 +29,9 @@ mongoose
     console.log('Error connecting to MongoDB ' + error)
   })
 
-// app.get('/items', async (req, res) => {
-//   try {
-//     const items = await Item.find({})
-//     res.status(200).json(items)
-//   } catch (error) {
-//     const message = (error as Error).message
-//     res.status(500).json({ message })
-//   }
-// })
+app.use('/api/item', itemRouter)
 
-app.use('/items', itemRouter)
-
-app.use('/shops', shopRouter)
+app.use('/api/shop', shopRouter)
 
 // async function testAddUser() {
 //   try {

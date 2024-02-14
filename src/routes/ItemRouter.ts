@@ -2,9 +2,8 @@ import { Router } from 'express'
 import { Item } from '../models'
 
 const itemRouter = Router()
-// let items: Item[]
 
-itemRouter.get('/', async (req, res) => {
+itemRouter.get('/all', async (req, res) => {
   try {
     const items = await Item.find({})
     res.status(200).json(items)
@@ -13,25 +12,5 @@ itemRouter.get('/', async (req, res) => {
     res.status(500).json({ message })
   }
 })
-
-// router.post('/', (req: Request, res: Response) => {
-//   const { name, description, link, tags, type, prize, weight }: Item = req.body
-//   const item: Item = {
-//     name,
-//     description,
-//     link,
-//     tags,
-//     type,
-//     prize,
-//     weight
-//   }
-
-//   items.push(item)
-//   res.status(201).json(item)
-// })
-
-// router.get('/', (req: Request, res: Response) => {
-//   res.json(items)
-// })
 
 export { itemRouter }

@@ -7,23 +7,8 @@ const itemSchema = new mongoose.Schema({
   description: { type: [String], required: false },
   weight: { type: String, required: false },
   tags: { type: [String], required: false },
-  link: { type: String, required: false }
+  link: { type: String, required: false },
 })
 
 const Item = mongoose.model('Item', itemSchema)
-export { Item }
-
-// interface Item {
-//   _id?: string
-//   name?: string
-//   type: string
-//   prize?: string
-//   description: string[]
-//   weight?: string
-//   tags: string[]
-//   link: string
-// }
-
-// export { Item }
-
-// module.exports = mongoose.model('Item', itemSchema)
+export { Item, itemSchema }

@@ -1,13 +1,9 @@
 import mongoose from 'mongoose'
+import { itemSchema } from './Item'
 
 const shopSchema = new mongoose.Schema({
   name: String,
-  items: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Item',
-    },
-  ],
+  items: [itemSchema],
 })
 
 const Shop = mongoose.model('Shop', shopSchema)
