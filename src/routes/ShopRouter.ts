@@ -5,10 +5,8 @@ const shopRouter = express.Router()
 
 async function setActiveShop(shopId: string) {
   try {
-    // Set all shops to inactive
     await Shop.updateMany({}, { isActive: false })
 
-    // Set the specified shop as active
     await Shop.findByIdAndUpdate(shopId, { isActive: true })
 
     console.log(`Shop ${shopId} is now the active shop.`)
