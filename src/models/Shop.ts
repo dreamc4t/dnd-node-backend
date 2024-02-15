@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import { itemSchema } from './Item'
+import { itemSchema } from './sItem'
 
 const shopSchema = new mongoose.Schema({
   name: String,
