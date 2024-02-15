@@ -9,6 +9,12 @@ dotenv.config()
 const app: Express = express()
 const port = process.env.PORT || 3005
 
+const allowedOrigins = ['http://localhost:3000', 'https://dnd-shop-generator.vercel.app']
+const corsOptions = {
+  origin: allowedOrigins,
+}
+
+app.use(cors(corsOptions))
 app.use(express.json())
 
 app.get('/', (req: Request, res: Response) => {
@@ -18,12 +24,6 @@ app.get('/', (req: Request, res: Response) => {
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`)
 })
-
-const corsOptions = {
-  origin: 'http://localhost:3000',
-}
-
-app.use(cors(corsOptions))
 
 mongoose
   .connect(
