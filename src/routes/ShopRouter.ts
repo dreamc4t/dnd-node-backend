@@ -19,7 +19,7 @@ shopRouter.get('/active', async (req: Request, res: Response) => {
   try {
     const activeShop = await Shop.findOne({ isActive: true })
     if (!activeShop) {
-      return res.status(404).json({ message: 'No active shop found.' })
+      return res.status(204).json({ message: 'No active shop found.' })
     }
     res.status(200).json(activeShop)
   } catch (error) {

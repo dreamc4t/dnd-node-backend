@@ -5,17 +5,17 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    lowercase: true
+    lowercase: true,
   },
   createdAt: {
     type: Date,
     immutable: false,
-    default: () => Date.now()
+    default: () => Date.now(),
   },
   updatedAt: {
     type: Date,
-    default: () => Date.now()
-  }
+    default: () => Date.now(),
+  },
 })
 
 const User = mongoose.model('User', userSchema)
