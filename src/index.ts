@@ -1,8 +1,9 @@
 import express, { Express, Request, Response } from 'express'
 import dotenv from 'dotenv'
 import mongoose from 'mongoose'
-import { itemRouter, shopRouter } from './routes'
+import { itemRouter, shopRouter, userRouter } from './routes'
 import cors from 'cors'
+// import jwt from 'jsonwebtoken'
 
 dotenv.config()
 
@@ -39,6 +40,8 @@ mongoose
 app.use('/api/item', itemRouter)
 
 app.use('/api/shop', shopRouter)
+
+app.use('/api/user', userRouter)
 
 // async function testAddUser() {
 //   try {
