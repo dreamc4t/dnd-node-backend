@@ -1,7 +1,8 @@
 import { Response, Request } from 'express'
-import jwt from 'jsonwebtoken'
 import { RefreshToken, User } from '../models'
 import bcrypt from 'bcrypt'
+import { createRefreshToken, createAccessToken } from './jwt'
+import { verifyPassword } from './utils'
 
 interface RequestWithBody extends Request {
   body: {
@@ -12,9 +13,10 @@ interface RequestWithBody extends Request {
 
 async function signup(req: RequestWithBody, res: Response) {
   try {
-    const hashedPassword = await bcrypt.hash(req.body.password, 10)
+    const { username, password } = req.body
+    const hashedPassword = await bcrypt.hash(password, 10)
     const userDoc = new User({
-      username: req.body.username,
+      username,
       password: hashedPassword,
     })
 
@@ -41,7 +43,8 @@ async function signup(req: RequestWithBody, res: Response) {
 
 const login = async (req: Request, res: Response) => {
   try {
-    const userDoc = await User.findOne({ username: req.body.username }).select('+password').exec()
+    const { username } = req.body
+    const userDoc = await User.findOne({ username }).select('+password').exec()
     if (!userDoc) throw new Error('Wrong username or password')
 
     await verifyPassword(req.body.password, userDoc.password)
@@ -64,26 +67,6 @@ const login = async (req: Request, res: Response) => {
     const message = (error as Error).message
     res.status(500).json({ message })
   }
-}
-
-function createAccessToken(userId: string) {
-  if (!process.env.ACCESS_TOKEN_SECRET) throw new Error('Missing access token secret')
-
-  return jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '10m' })
-}
-
-function createRefreshToken(userId: string, refreshTokenId: string) {
-  if (!process.env.REFRESH_TOKEN_SECRET) throw new Error('Missing refresh token secret')
-
-  return jwt.sign({ userId, tokenId: refreshTokenId }, process.env.REFRESH_TOKEN_SECRET, {
-    expiresIn: '30d',
-  })
-}
-
-const verifyPassword = async (incomingPassword: string, hashedPassword: string) => {
-  const match = await bcrypt.compare(incomingPassword, hashedPassword)
-  if (!match) throw new Error('Wrong password')
-  return match
 }
 
 export { signup, login }
