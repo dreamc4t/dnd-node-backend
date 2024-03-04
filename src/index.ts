@@ -42,16 +42,3 @@ app.use('/api/item', itemRouter)
 app.use('/api/shop', shopRouter)
 
 app.use('/api/user', userRouter)
-
-// async function testAddUser() {
-//   try {
-//     const user = await User.create({
-//       name: 'Erik',
-//       email: 'erik@mail.com'
-//     })
-//     console.log(user)
-//   } catch (e) {
-//     const message = (e as Error).message
-//     console.log(message)
-//   }
-// }
