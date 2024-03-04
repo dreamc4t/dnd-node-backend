@@ -3,6 +3,8 @@ import dotenv from 'dotenv'
 import mongoose from 'mongoose'
 import { itemRouter, shopRouter, userRouter } from './routes'
 import cors from 'cors'
+import cookieParser from 'cookie-parser'
+
 // import jwt from 'jsonwebtoken'
 
 dotenv.config()
@@ -15,8 +17,10 @@ const corsOptions = {
   origin: allowedOrigins,
 }
 
+//middleware
 app.use(cors(corsOptions))
 app.use(express.json())
+app.use(cookieParser())
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Express + TypeScript Server')
