@@ -1,4 +1,11 @@
 import jwt from 'jsonwebtoken'
+import { ObjectId } from 'mongodb'
+
+const createToken = (id: ObjectId) => {
+  return jwt.sign({ id }, 'TODO SUPER SECRET', {
+    expiresIn: '30d',
+  })
+}
 
 function createAccessToken(userId: string) {
   if (!process.env.ACCESS_TOKEN_SECRET) throw new Error('Missing access token secret')
@@ -14,5 +21,4 @@ function createRefreshToken(userId: string, refreshTokenId: string) {
   })
 }
 
-
-export { createAccessToken, createRefreshToken }
+export { createAccessToken, createRefreshToken, createToken }

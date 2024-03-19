@@ -1,10 +1,16 @@
-import { Schema, model } from 'mongoose'
+import { Schema, model, Model } from 'mongoose'
 import bcrypt from 'bcrypt'
+import { ObjectId } from 'mongodb'
 interface IUser {
+  _id: ObjectId
   username: string
   password: string
   createdAt: Date
   updatedAt: Date
+}
+
+interface IUserModel extends Model<IUser> {
+  login(username: string, password: string): Promise<IUser>
 }
 const userSchema = new Schema<IUser>({
   username: {
@@ -52,6 +58,18 @@ userSchema.pre('save', async function (next) {
 })
 // --------------
 
+userSchema.statics.login = async function (username: string, password: string) {
+  const user = await this.findOne({ username })
+  if (user) {
+    const correctPassword = await bcrypt.compare(password, user.password)
+    if (correctPassword) {
+      return user
+    }
+    throw Error('incorrect password')
+  }
+  throw Error('incorrect username')
+}
+
 //namnet 'User' här kommer mongoose leta efter och pluralizse (users)
-const User = model<IUser>('User', userSchema)
+const User = model<IUser, IUserModel>('User', userSchema)
 export { User }

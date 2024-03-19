@@ -4,8 +4,7 @@ import mongoose from 'mongoose'
 import { itemRouter, shopRouter, userRouter } from './routes'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
-
-// import jwt from 'jsonwebtoken'
+// import { checkUser } from './middleware'
 
 dotenv.config()
 
@@ -15,12 +14,14 @@ const port = process.env.PORT || 3005
 const allowedOrigins = ['http://localhost:3000', 'https://dnd-shop-generator.vercel.app']
 const corsOptions = {
   origin: allowedOrigins,
+  credentials: true,
 }
 
 //middleware
 app.use(cors(corsOptions))
 app.use(express.json())
 app.use(cookieParser())
+// app.use('*', checkUser)
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Express + TypeScript Server')
@@ -42,7 +43,6 @@ mongoose
   })
 
 app.use('/api/item', itemRouter)
-
+// app.use('/api/shop', requireAuth, shopRouter) // can't see if not logged in
 app.use('/api/shop', shopRouter)
-
 app.use('/api/user', userRouter)
