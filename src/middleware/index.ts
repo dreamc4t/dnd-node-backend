@@ -1,1 +1,1 @@
-export { authenticateToken, requireAuth, checkUser } from './authMiddleware'
+export { requireAuthenticated, checkUser } from './authMiddleware'
