@@ -4,6 +4,7 @@ import mongoose from 'mongoose'
 import { itemRouter, shopRouter, userRouter } from './routes'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
+import { requireAuthenticated } from './middleware'
 // import { checkUser } from './middleware'
 
 dotenv.config()
@@ -23,14 +24,6 @@ app.use(express.json())
 app.use(cookieParser())
 // app.use('*', checkUser)
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Express + TypeScript Server')
-})
-
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`)
-})
-
 mongoose
   .connect(
     'mongodb+srv://dndAdmin:BgRwNY7752SFu8XR@dndcluster.onhzdy9.mongodb.net/dnd-db?retryWrites=true&w=majority',
@@ -42,7 +35,20 @@ mongoose
     console.log('Error connecting to MongoDB ' + error)
   })
 
+app.get('/', (req: Request, res: Response) => {
+  res.send('Express + TypeScript Server')
+})
+
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`)
+})
+
 app.use('/api/item', itemRouter)
-// app.use('/api/shop', requireAuth, shopRouter) // can't see if not logged in
-app.use('/api/shop', shopRouter)
+app.use('/api/shop', requireAuthenticated, shopRouter) // can't see if not logged in
+
+// app.use('/api/shop', shopRouter)
 app.use('/api/user', userRouter)
+
+app.get('/api/protected', requireAuthenticated, (req, res) => {
+  res.json({ message: 'This is a protected api route yeeeeeah, only logged in can see' })
+})
