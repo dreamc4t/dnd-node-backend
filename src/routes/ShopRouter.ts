@@ -1,41 +1,8 @@
-import express, { Request, Response } from 'express'
+import { Request, Response, Router } from 'express'
 import { Shop } from '../models'
+// import { requireAuthenticated } from '../middleware'
 
-const shopRouter = express.Router()
-
-async function setActiveShop(shopId: string) {
-  try {
-    await Shop.updateMany({}, { isActive: false })
-
-    await Shop.findByIdAndUpdate(shopId, { isActive: true })
-
-    console.log(`Shop ${shopId} is now the active shop.`)
-  } catch (error) {
-    console.error('Failed to set active shop:', error)
-  }
-}
-
-shopRouter.get('/active', async (req: Request, res: Response) => {
-  try {
-    const activeShop = await Shop.findOne({ isActive: true })
-    if (!activeShop) {
-      return res.status(204).json({ message: 'No active shop found.' })
-    }
-    res.status(200).json(activeShop)
-  } catch (error) {
-    res.status(500).json({ message: (error as Error).message })
-  }
-})
-
-shopRouter.post('/activate/:id', async (req: Request, res: Response) => {
-  const { id } = req.params
-  try {
-    await setActiveShop(id)
-    res.status(200).json({ message: `Shop ${id} is now the active shop.` })
-  } catch (error) {
-    res.status(500).json({ message: (error as Error).message })
-  }
-})
+const shopRouter = Router()
 
 shopRouter.get('/all', async (req: Request, res: Response) => {
   try {
@@ -44,6 +11,19 @@ shopRouter.get('/all', async (req: Request, res: Response) => {
   } catch (error) {
     const message = (error as Error).message
     res.status(500).json({ message })
+  }
+})
+
+shopRouter.get('/:id', async (req: Request, res: Response) => {
+  const { id } = req.params
+  try {
+    const shop = await Shop.findById(id)
+    if (!shop) {
+      return res.status(204).json({ message: 'No shop found with that ID' })
+    }
+    res.status(200).json(shop)
+  } catch (error) {
+    res.status(500).json({ message: (error as Error).message })
   }
 })
 
@@ -58,23 +38,11 @@ shopRouter.post('/new', async (req, res) => {
   }
 })
 
-shopRouter.get('/:id', async (req: Request, res: Response) => {
-  try {
-    const shop = await Shop.findById(req.params.id)
-    if (!shop) {
-      return res.status(404).json({ message: 'Shop not found' })
-    }
-    res.status(200).json(shop)
-  } catch (error) {
-    const message = (error as Error).message
-    res.status(500).json({ message })
-  }
-})
 shopRouter.patch('/update/:id', async (req: Request, res: Response) => {
   try {
     const shop = await Shop.findByIdAndUpdate(req.params.id, req.body, { new: true })
     if (!shop) {
-      return res.status(404).json({ message: 'Shop not found' })
+      return res.status(404).json({ message: 'No shop found with that ID' })
     }
     res.status(200).json(shop)
   } catch (error) {

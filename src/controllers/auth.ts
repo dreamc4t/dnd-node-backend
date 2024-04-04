@@ -3,6 +3,7 @@ import { User } from '../models'
 import { createToken } from './jwt'
 import jwt, { JwtPayload, VerifyErrors } from 'jsonwebtoken'
 import { getJwtFromReq } from '../utils'
+import { maxAge } from '../constants/maxAge'
 
 // TODO BEFORE PUBLISH
 // more user friendly error messages
@@ -15,8 +16,6 @@ interface RequestWithBody extends Request {
     password: string
   }
 }
-
-const maxAge = 3 * 24 * 60 * 60 // 3 days
 
 async function signup(req: RequestWithBody, res: Response) {
   try {

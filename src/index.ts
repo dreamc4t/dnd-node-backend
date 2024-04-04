@@ -44,7 +44,7 @@ app.listen(port, () => {
 })
 
 app.use('/api/item', itemRouter)
-app.use('/api/shop', requireAuthenticated, shopRouter) // can't see if not logged in
+app.use('/api/shop', shopRouter)
 
 // app.use('/api/shop', shopRouter)
 app.use('/api/user', userRouter)
