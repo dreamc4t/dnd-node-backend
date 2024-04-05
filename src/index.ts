@@ -11,12 +11,15 @@ dotenv.config()
 
 const app: Express = express()
 const port = process.env.PORT || 3005
+const mongoURL = process.env.MONGO_URL as string
+if (!mongoURL) console.log('Missing mongo url')
 
 const allowedOrigins = ['http://localhost:3000', 'https://dnd-shop-generator.vercel.app']
 const corsOptions = {
   origin: allowedOrigins,
   credentials: true,
 }
+console.log(mongoURL);
 
 //middleware
 app.use(cors(corsOptions))
@@ -25,9 +28,7 @@ app.use(cookieParser())
 // app.use('*', checkUser)
 
 mongoose
-  .connect(
-    'mongodb+srv://dndAdmin:BgRwNY7752SFu8XR@dndcluster.onhzdy9.mongodb.net/dnd-db?retryWrites=true&w=majority',
-  )
+  .connect(mongoURL)
   .then(() => {
     console.log('Connected to MongoDB')
   })
