@@ -5,8 +5,6 @@ import { User } from '../models'
 const requireAuthenticated = (req: Request, res: Response, next: NextFunction) => {
   let jwtToken = req.cookies.jwt
 
-  console.log(req.headers.authorization)
-
   if (!jwtToken && req.headers.authorization) {
     // Split the Authorization header to remove the 'Bearer' prefix
     const parts = req.headers.authorization.split(' ')
