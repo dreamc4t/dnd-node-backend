@@ -6,4 +6,5 @@ PORT = 3005
 
 MONGO_URI = mongodb+srv://username:password@dndcluster.onhzdy9.mongodb.net/dnd-db?retryWrites=true&w=majority
 
-JWT_SECRET = 123abc123abc
+ACCESS_TOKEN_SECRET = xxx123
+REFRESH_TOKEN_SECRET = xxxx123

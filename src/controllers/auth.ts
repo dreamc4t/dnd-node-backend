@@ -1,6 +1,6 @@
 import { Response, Request } from 'express'
 import { User } from '../models'
-import { createToken } from './jwt'
+import { createAccessToken, createRefreshToken } from './jwt'
 import jwt, { JwtPayload, VerifyErrors } from 'jsonwebtoken'
 import { getJwtFromReq } from '../utils'
 import { maxAge } from '../constants/maxAge'
@@ -10,6 +10,7 @@ import { maxAge } from '../constants/maxAge'
 // https://www.youtube.com/watch?v=nukNITdis9g&list=PL4cUxeGkcC9iqqESP8335DA5cRFp8loyp&index=5&ab_channel=NetNinja
 // dont think we need. Message is fine. But in case we want
 
+// TODO 8 april. Ska vi verkligen pass as cookies eller bara ha de i return objektet??
 interface RequestWithBody extends Request {
   body: {
     username: string
@@ -17,14 +18,31 @@ interface RequestWithBody extends Request {
   }
 }
 
+interface RequestWithUserId extends Request {
+  userId?: string | JwtPayload
+}
+
 async function signup(req: RequestWithBody, res: Response) {
   try {
     const { username, password } = req.body
 
     const user = await User.create({ username, password })
-    const token = createToken(user._id)
-    res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 })
-    res.status(201).json({ user: user._id })
+
+    const accessToken = createAccessToken(user._id)
+    const refreshToken = createRefreshToken(user._id)
+    res.cookie('accessToken', accessToken, { httpOnly: true, maxAge: maxAge * 1000 })
+    res.cookie('refreshToken', refreshToken, { httpOnly: true, maxAge: maxAge * 1000 })
+
+    res.status(201).json({
+      user: {
+        id: user._id,
+        username: user.username,
+        createdAt: user.createdAt,
+        accessToken,
+        refreshToken,
+      },
+    })
+    // res.status(201).json({ user: user._id })
 
     // Denna är deras egna docs  https://mongoosejs.com/docs/typescript.html
     // const userDoc = new User({
@@ -60,11 +78,20 @@ const login = async (req: Request, res: Response) => {
 
   try {
     const user = await User.login(username, password)
-    const token = createToken(user._id)
-    res.cookie('jwt', token, { httpOnly: true, maxAge })
+    const accessToken = createAccessToken(user._id)
+    const refreshToken = createRefreshToken(user._id)
+    // res.cookie('jwt', token, { httpOnly: true, maxAge })
+    res.cookie('accessToken', accessToken, { httpOnly: true, maxAge: maxAge * 1000 })
+    res.cookie('refreshToken', refreshToken, { httpOnly: true, maxAge: maxAge * 1000 })
 
     res.status(200).json({
-      user: { id: user._id, username: user.username, createdAt: user.createdAt },
+      user: {
+        id: user._id,
+        username: user.username,
+        createdAt: user.createdAt,
+        accessToken,
+        refreshToken,
+      },
     })
   } catch (error) {
     const message = (error as Error).message
@@ -74,17 +101,38 @@ const login = async (req: Request, res: Response) => {
   }
 }
 
+const refreshToken = async (req: RequestWithUserId, res: Response) => {
+  try {
+    const user = await User.findById(req.userId)
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' })
+    }
+    const accessToken = createAccessToken(user._id)
+    const refreshToken = createRefreshToken(user._id)
+
+    res.status(200).json({
+      accessToken,
+      refreshToken,
+    })
+  } catch (error) {
+    const message = (error as Error).message
+    console.log(message)
+    res.status(500).json({ message: 'Internal Server Error' })
+  }
+}
+// Async?
 const logout = (req: Request, res: Response) => {
   console.log('Logging out user')
   res.clearCookie('jwt')
   res.status(200).json({ message: 'Logout successful' })
 }
 
+// Async?
 const verifyToken = (req: Request, res: Response) => {
   console.log('verifying user')
 
   try {
-    const secret = process.env.JWT_SECRET
+    const secret = process.env.ACCESS_TOKEN_SECRET
     if (!secret) {
       console.error('Missing jwt secret')
       return res.status(500).json({ message: 'Server configuration error, missing jwt secret' })
@@ -92,16 +140,7 @@ const verifyToken = (req: Request, res: Response) => {
 
     const jwtToken = getJwtFromReq(req)
 
-    if (!jwtToken) {
-      return res.status(401).json({ message: 'No jwt token provided' })
-    }
-    // let jwtToken = req.cookies.jwt
-    // if (!jwtToken && req.headers.authorization) {
-    //   const parts = req.headers.authorization.split(' ')
-    //   if (parts.length === 2 && parts[0] === 'Bearer') {
-    //     jwtToken = parts[1]
-    //   }
-    // }
+    if (!jwtToken) return res.status(401).json({ message: 'No jwt token provided' })
 
     jwt.verify(
       jwtToken,
@@ -132,4 +171,4 @@ const verifyToken = (req: Request, res: Response) => {
   }
 }
 
-export { signup, login, logout, verifyToken }
+export { signup, login, logout, verifyToken, refreshToken }

@@ -1,23 +1,26 @@
 import jwt from 'jsonwebtoken'
 import { ObjectId } from 'mongodb'
-import { maxAge } from '../constants/maxAge'
 
-const createToken = (id: ObjectId) => {
-  const secret = process.env.JWT_SECRET
-  if (!secret) throw new Error('Missing jwt secret')
+const createAccessToken = (id: ObjectId) => {
+  const secret = process.env.ACCESS_TOKEN_SECRET
+  if (!secret) throw new Error('Missing access token secret')
 
   return jwt.sign({ id }, secret, {
-    expiresIn: maxAge,
+    expiresIn: '1h',
   })
 }
 
-export { createToken }
+// TODO 8 april,kolla på din utkommenterade här under
+const createRefreshToken = (id: ObjectId) => {
+  const secret = process.env.REFRESH_TOKEN_SECRET
+  if (!secret) throw new Error('Missing refresh token secret')
 
-// function createAccessToken(userId: string) {
-//   if (!process.env.ACCESS_TOKEN_SECRET) throw new Error('Missing access token secret')
+  return jwt.sign({ id }, secret, {
+    expiresIn: '7d',
+  })
+}
 
-//   return jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '10m' })
-// }
+export { createAccessToken, createRefreshToken }
 
 // function createRefreshToken(userId: string, refreshTokenId: string) {
 //   if (!process.env.REFRESH_TOKEN_SECRET) throw new Error('Missing refresh token secret')

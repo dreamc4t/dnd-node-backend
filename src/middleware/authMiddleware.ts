@@ -1,6 +1,50 @@
 import { Response, Request, NextFunction } from 'express'
 import jwt, { JwtPayload, VerifyErrors } from 'jsonwebtoken'
 import { User } from '../models'
+import { extractRefreshTokenFromHeader, extractTokenFromHeader } from '../utils'
+import { ReqWithUserId } from '../interfaces'
+
+interface TokenPayload extends JwtPayload {
+  id: string
+}
+
+const requireRefreshToken = async (req: ReqWithUserId, res: Response, next: NextFunction) => {
+  const refreshToken = extractRefreshTokenFromHeader(req)
+  if (!refreshToken) return res.status(401).json({ message: 'No refresh token provided' })
+
+  const secret = process.env.REFRESH_TOKEN_SECRET
+  if (!secret) return res.status(500).json({ message: 'No refresh token secret found' })
+
+  try {
+    const decodedToken = jwt.verify(refreshToken, secret) as TokenPayload
+
+    if (!decodedToken?.id) throw new Error('Invalid token: ID not found')
+
+    req.userId = decodedToken.id
+    next()
+  } catch (error) {
+    console.log('error trying to verify jwt', error)
+    res.status(401).json({ message: 'Unauthorized: Invalid token' })
+  }
+}
+
+const requireAccessToken = (req: Request, res: Response, next: NextFunction) => {
+  const jwtToken = extractTokenFromHeader(req)
+  if (!jwtToken) return res.status(401).json({ message: 'No access token provided' })
+
+  const secret = process.env.ACCESS_TOKEN_SECRET
+  if (!secret) return res.status(500).json({ message: 'No Access token secret found' })
+
+  jwt.verify(jwtToken, secret, (err: VerifyErrors | null, decodedToken?: string | JwtPayload) => {
+    if (err) {
+      console.log('error trying to verify jwt', err)
+      res.status(401).json({ message: 'Unauthorized: Invalid token' })
+    } else {
+      console.log('requireAccessToken passed! Here is the decoded token:', decodedToken)
+      next()
+    }
+  })
+}
 
 const requireAuthenticated = (req: Request, res: Response, next: NextFunction) => {
   let jwtToken = req.cookies.jwt
@@ -17,7 +61,7 @@ const requireAuthenticated = (req: Request, res: Response, next: NextFunction) =
     return res.status(401).json({ message: 'No token provided' })
   }
 
-  const secret = process.env.JWT_SECRET
+  const secret = process.env.ACCESS_TOKEN_SECRET
   if (!secret) {
     console.error('Missing jwt secret')
     return res.status(500).json({ message: 'Server configuration error' })
@@ -91,4 +135,4 @@ const checkUser = (req: Request, res: Response, next: NextFunction) => {
 //     next()
 //   })
 // }
-export { requireAuthenticated, checkUser }
+export { requireAuthenticated, checkUser, requireAccessToken, requireRefreshToken }
