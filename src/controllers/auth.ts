@@ -120,6 +120,4 @@ const refreshToken = async (req: RequestWithUserId, res: Response) => {
   }
 }
 
-
-
-export { signup, login,  refreshToken }
+export { signup, login, refreshToken }
