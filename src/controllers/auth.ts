@@ -120,11 +120,6 @@ const refreshToken = async (req: RequestWithUserId, res: Response) => {
   }
 }
 
-// Async?
-const logout = (req: Request, res: Response) => {
-  console.log('Logging out user')
-  res.clearCookie('jwt')
-  res.status(200).json({ message: 'Logout successful' })
-}
 
-export { signup, login, logout, refreshToken }
+
+export { signup, login,  refreshToken }
