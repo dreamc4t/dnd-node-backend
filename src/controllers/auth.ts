@@ -1,7 +1,7 @@
 import { Response, Request } from 'express'
 import { User } from '../models'
 import { createAccessToken, createRefreshToken } from './jwt'
-import  { JwtPayload, } from 'jsonwebtoken'
+import { JwtPayload } from 'jsonwebtoken'
 // import { maxAge } from '../constants/maxAge'
 
 // TODO BEFORE PUBLISH
@@ -9,7 +9,6 @@ import  { JwtPayload, } from 'jsonwebtoken'
 // https://www.youtube.com/watch?v=nukNITdis9g&list=PL4cUxeGkcC9iqqESP8335DA5cRFp8loyp&index=5&ab_channel=NetNinja
 // dont think we need. Message is fine. But in case we want
 
-// TODO 8 april. Ska vi verkligen pass as cookies eller bara ha de i return objektet??
 interface RequestWithBody extends Request {
   body: {
     username: string
@@ -31,8 +30,6 @@ async function signup(req: RequestWithBody, res: Response) {
 
     const accessToken = createAccessToken(user._id)
     const refreshToken = createRefreshToken(user._id)
-    // res.cookie('accessToken', accessToken, { httpOnly: true, maxAge: maxAge * 1000 })
-    // res.cookie('refreshToken', refreshToken, { httpOnly: true, maxAge: maxAge * 1000 })
 
     res.status(201).json({
       user: {
@@ -81,9 +78,6 @@ const login = async (req: Request, res: Response) => {
     const user = await User.login(username, password)
     const accessToken = createAccessToken(user._id)
     const refreshToken = createRefreshToken(user._id)
-    // // res.cookie('jwt', token, { httpOnly: true, maxAge })
-    // res.cookie('accessToken', accessToken, { httpOnly: true, maxAge: maxAge * 1000 })
-    // res.cookie('refreshToken', refreshToken, { httpOnly: true, maxAge: maxAge * 1000 })
 
     res.status(200).json({
       user: {
@@ -125,6 +119,7 @@ const refreshToken = async (req: RequestWithUserId, res: Response) => {
     res.status(500).json({ message: 'Internal Server Error' })
   }
 }
+
 // Async?
 const logout = (req: Request, res: Response) => {
   console.log('Logging out user')
@@ -132,6 +127,4 @@ const logout = (req: Request, res: Response) => {
   res.status(200).json({ message: 'Logout successful' })
 }
 
-
-
-export { signup, login, logout,  refreshToken }
+export { signup, login, logout, refreshToken }
