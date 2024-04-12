@@ -1,7 +1,7 @@
 import express, { Express, Request, Response } from 'express'
 import dotenv from 'dotenv'
 import mongoose from 'mongoose'
-import { itemRouter, shopRouter, userRouter } from './routes'
+import { authRouter, itemRouter, shopRouter, userRouter } from './routes'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import { requireAuthenticated } from './middleware'
@@ -45,6 +45,7 @@ async function startServer() {
     app.use('/api/item', itemRouter)
     app.use('/api/shop', shopRouter)
     app.use('/api/user', userRouter)
+    app.use('/api/auth', authRouter)
     app.get('/api/protected', requireAuthenticated, (req, res) => {
       res.json({ message: 'This is a protected api route yeeeeeah, only logged in can see' })
     })
