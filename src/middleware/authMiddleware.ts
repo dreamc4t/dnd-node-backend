@@ -23,7 +23,7 @@ const requireRefreshToken = async (req: ReqWithUserId, res: Response, next: Next
     req.userId = decodedToken.id
     next()
   } catch (error) {
-    console.log('error trying to verify jwt', error)
+    console.log('error trying to verify jwt in requireRefreshToken', error)
     res.status(401).json({ message: 'Unauthorized: Invalid token' })
   }
 }
@@ -37,7 +37,7 @@ const requireAccessToken = (req: Request, res: Response, next: NextFunction) => 
 
   jwt.verify(jwtToken, secret, (err: VerifyErrors | null, decodedToken?: string | JwtPayload) => {
     if (err) {
-      console.log('error trying to verify jwt', err)
+      console.log('error trying to verify jwt in requireAccessToken', err)
       res.status(401).json({ message: 'Unauthorized: Invalid token' })
     } else {
       console.log('requireAccessToken passed! Here is the decoded token:', decodedToken)
@@ -74,7 +74,7 @@ const requireAuthenticated = (req: Request, res: Response, next: NextFunction) =
 
     jwt.verify(jwtToken, secret, (err: VerifyErrors | null, decodedToken?: string | JwtPayload) => {
       if (err) {
-        console.log('error trying to verify jwt', err)
+        console.log('error trying to verify jwt in requireAuthenticated', err)
         res.status(401).json({ message: 'Unauthorized: Invalid token' })
       } else {
         console.log('Here is the decoded token:', decodedToken)

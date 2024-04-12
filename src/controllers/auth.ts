@@ -3,7 +3,7 @@ import { User } from '../models'
 import { createAccessToken, createRefreshToken } from './jwt'
 import jwt, { JwtPayload, VerifyErrors } from 'jsonwebtoken'
 import { getJwtFromReq } from '../utils'
-import { maxAge } from '../constants/maxAge'
+// import { maxAge } from '../constants/maxAge'
 
 // TODO BEFORE PUBLISH
 // more user friendly error messages
@@ -22,6 +22,8 @@ interface RequestWithUserId extends Request {
   userId?: string | JwtPayload
 }
 
+// const EXPIRE_TIME = 1000 * 20 // 1000 milliseconds
+
 async function signup(req: RequestWithBody, res: Response) {
   try {
     const { username, password } = req.body
@@ -30,8 +32,8 @@ async function signup(req: RequestWithBody, res: Response) {
 
     const accessToken = createAccessToken(user._id)
     const refreshToken = createRefreshToken(user._id)
-    res.cookie('accessToken', accessToken, { httpOnly: true, maxAge: maxAge * 1000 })
-    res.cookie('refreshToken', refreshToken, { httpOnly: true, maxAge: maxAge * 1000 })
+    // res.cookie('accessToken', accessToken, { httpOnly: true, maxAge: maxAge * 1000 })
+    // res.cookie('refreshToken', refreshToken, { httpOnly: true, maxAge: maxAge * 1000 })
 
     res.status(201).json({
       user: {
@@ -80,17 +82,20 @@ const login = async (req: Request, res: Response) => {
     const user = await User.login(username, password)
     const accessToken = createAccessToken(user._id)
     const refreshToken = createRefreshToken(user._id)
-    // res.cookie('jwt', token, { httpOnly: true, maxAge })
-    res.cookie('accessToken', accessToken, { httpOnly: true, maxAge: maxAge * 1000 })
-    res.cookie('refreshToken', refreshToken, { httpOnly: true, maxAge: maxAge * 1000 })
+    // // res.cookie('jwt', token, { httpOnly: true, maxAge })
+    // res.cookie('accessToken', accessToken, { httpOnly: true, maxAge: maxAge * 1000 })
+    // res.cookie('refreshToken', refreshToken, { httpOnly: true, maxAge: maxAge * 1000 })
 
     res.status(200).json({
       user: {
         id: user._id,
         username: user.username,
         createdAt: user.createdAt,
+      },
+      backendTokens: {
         accessToken,
         refreshToken,
+        // expiresIn: new Date(new Date().getTime() + EXPIRE_TIME),
       },
     })
   } catch (error) {
@@ -113,6 +118,7 @@ const refreshToken = async (req: RequestWithUserId, res: Response) => {
     res.status(200).json({
       accessToken,
       refreshToken,
+      // expiresIn: new Date(new Date().getTime() + EXPIRE_TIME),
     })
   } catch (error) {
     const message = (error as Error).message
