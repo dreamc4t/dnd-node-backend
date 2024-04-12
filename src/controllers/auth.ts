@@ -1,8 +1,7 @@
 import { Response, Request } from 'express'
 import { User } from '../models'
 import { createAccessToken, createRefreshToken } from './jwt'
-import jwt, { JwtPayload, VerifyErrors } from 'jsonwebtoken'
-import { getJwtFromReq } from '../utils'
+import  { JwtPayload, } from 'jsonwebtoken'
 // import { maxAge } from '../constants/maxAge'
 
 // TODO BEFORE PUBLISH
@@ -133,48 +132,6 @@ const logout = (req: Request, res: Response) => {
   res.status(200).json({ message: 'Logout successful' })
 }
 
-// Async?
-const verifyToken = (req: Request, res: Response) => {
-  console.log('verifying user')
 
-  try {
-    const secret = process.env.ACCESS_TOKEN_SECRET
-    if (!secret) {
-      console.error('Missing jwt secret')
-      return res.status(500).json({ message: 'Server configuration error, missing jwt secret' })
-    }
 
-    const jwtToken = getJwtFromReq(req)
-
-    if (!jwtToken) return res.status(401).json({ message: 'No jwt token provided' })
-
-    jwt.verify(
-      jwtToken,
-      secret,
-      async (err: VerifyErrors | null, decodedToken?: string | JwtPayload) => {
-        if (err) return res.status(200).json({ isLoggedIn: false })
-
-        if (decodedToken && typeof decodedToken !== 'string') {
-          const userId = decodedToken.id
-
-          try {
-            const user = await User.findById(userId).select('-password')
-            if (!user) {
-              return res.status(404).json({ message: 'User not found' })
-            }
-
-            return res.status(200).json({ isLoggedIn: true, user })
-          } catch (fetchError) {
-            return res.status(500).json({ message: 'Error fetching user data' })
-          }
-        } else {
-          return res.status(401).json({ isLoggedIn: false, user: null })
-        }
-      },
-    )
-  } catch (error) {
-    res.status(500).json({ message: 'Error checking authentication status' })
-  }
-}
-
-export { signup, login, logout, verifyToken, refreshToken }
+export { signup, login, logout,  refreshToken }
