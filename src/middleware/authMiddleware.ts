@@ -1,6 +1,6 @@
 import { Response, NextFunction } from 'express'
 import jwt, { JwtPayload } from 'jsonwebtoken'
-import { extractRefreshTokenFromHeader, extractTokenFromHeader } from '../utils'
+import { extractTokenFromHeader } from '../utils'
 import { ReqWithUserId } from '../interfaces'
 
 interface TokenPayload extends JwtPayload {
@@ -8,7 +8,7 @@ interface TokenPayload extends JwtPayload {
 }
 
 const requireRefreshToken = async (req: ReqWithUserId, res: Response, next: NextFunction) => {
-  const refreshToken = extractRefreshTokenFromHeader(req)
+  const refreshToken = extractTokenFromHeader(req, 'Refresh')
   if (!refreshToken) return res.status(401).json({ message: 'No refresh token provided' })
 
   const secret = process.env.REFRESH_TOKEN_SECRET
@@ -28,7 +28,8 @@ const requireRefreshToken = async (req: ReqWithUserId, res: Response, next: Next
 }
 
 const requireAccessToken = (req: ReqWithUserId, res: Response, next: NextFunction) => {
-  const jwtToken = extractTokenFromHeader(req)
+  const jwtToken = extractTokenFromHeader(req, 'Bearer')
+
   if (!jwtToken) {
     console.log('No access token found in headers, requireAccessToken')
     return res.status(401).json({ message: 'No access token provided' })
