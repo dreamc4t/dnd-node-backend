@@ -1,6 +1,7 @@
-import mongoose from 'mongoose'
+import { Schema, model } from 'mongoose'
+import { IItem } from '../interfaces'
 
-const itemSchema = new mongoose.Schema({
+const itemSchema = new Schema<IItem>({
   name: { type: String, required: true },
   type: { type: String, required: false },
   prize: { type: String, required: false },
@@ -10,5 +11,5 @@ const itemSchema = new mongoose.Schema({
   link: { type: String, required: false },
 })
 
-const Item = mongoose.model('Item', itemSchema)
+const Item = model('Item', itemSchema)
 export { Item, itemSchema }

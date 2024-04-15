@@ -1,13 +1,6 @@
 import { Schema, model, Model } from 'mongoose'
 import bcrypt from 'bcrypt'
-import { ObjectId } from 'mongodb'
-interface IUser {
-  _id: ObjectId
-  username: string
-  password: string
-  createdAt: Date
-  updatedAt: Date
-}
+import { IUser } from '../interfaces'
 
 interface IUserModel extends Model<IUser> {
   login(username: string, password: string): Promise<IUser>
