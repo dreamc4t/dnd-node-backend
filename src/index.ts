@@ -4,7 +4,6 @@ import mongoose from 'mongoose'
 import { authRouter, itemRouter, shopRouter, userRouter } from './routes'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
-// import { checkUser } from './middleware'
 
 dotenv.config()
 
@@ -27,7 +26,6 @@ const corsOptions = {
 app.use(cors(corsOptions))
 app.use(express.json())
 app.use(cookieParser())
-// app.use('*', checkUser)
 
 async function startServer() {
   try {
