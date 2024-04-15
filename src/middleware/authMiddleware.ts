@@ -1,6 +1,6 @@
 import { Response, NextFunction } from 'express'
 import jwt, { JwtPayload } from 'jsonwebtoken'
-import { extractTokenFromHeader } from '../utils'
+import { extractTokenFromHeader } from './utils'
 import { ReqWithUserId } from '../interfaces'
 
 interface TokenPayload extends JwtPayload {
