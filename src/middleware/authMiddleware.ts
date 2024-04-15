@@ -46,48 +46,6 @@ const requireAccessToken = (req: Request, res: Response, next: NextFunction) => 
   })
 }
 
-const requireAuthenticated = (req: Request, res: Response, next: NextFunction) => {
-  let jwtToken = req.cookies.jwt
-
-  if (!jwtToken && req.headers.authorization) {
-    // Split the Authorization header to remove the 'Bearer' prefix
-    const parts = req.headers.authorization.split(' ')
-
-    if (parts.length === 2 && parts[0] === 'Bearer') {
-      jwtToken = parts[1]
-    }
-  }
-  if (!jwtToken) {
-    return res.status(401).json({ message: 'No token provided' })
-  }
-
-  const secret = process.env.ACCESS_TOKEN_SECRET
-  if (!secret) {
-    console.error('Missing jwt secret')
-    return res.status(500).json({ message: 'Server configuration error' })
-  }
-
-  //check jwt exists & is verified
-  // check if token exists & is verified
-  if (jwtToken) {
-    console.log('token exists!')
-
-    jwt.verify(jwtToken, secret, (err: VerifyErrors | null, decodedToken?: string | JwtPayload) => {
-      if (err) {
-        console.log('error trying to verify jwt in requireAuthenticated', err)
-        res.status(401).json({ message: 'Unauthorized: Invalid token' })
-      } else {
-        console.log('Here is the decoded token:', decodedToken)
-
-        next() //this takes us to next step after middleware
-      }
-    })
-  } else {
-    console.log('error, no token to use for requireAuthenticated function')
-    res.status(401).json({ message: 'Unauthorized: No token provided' })
-  }
-}
-
 // DENNA körs på varje verify just nu, spana in
 
 const checkUser = (req: Request, res: Response, next: NextFunction) => {
@@ -135,4 +93,46 @@ const checkUser = (req: Request, res: Response, next: NextFunction) => {
 //     next()
 //   })
 // }
-export { requireAuthenticated, checkUser, requireAccessToken, requireRefreshToken }
+export { checkUser, requireAccessToken, requireRefreshToken }
+
+// const requireAuthenticated = (req: Request, res: Response, next: NextFunction) => {
+//   let jwtToken = req.cookies.jwt
+
+//   if (!jwtToken && req.headers.authorization) {
+//     // Split the Authorization header to remove the 'Bearer' prefix
+//     const parts = req.headers.authorization.split(' ')
+
+//     if (parts.length === 2 && parts[0] === 'Bearer') {
+//       jwtToken = parts[1]
+//     }
+//   }
+//   if (!jwtToken) {
+//     return res.status(401).json({ message: 'No token provided' })
+//   }
+
+//   const secret = process.env.ACCESS_TOKEN_SECRET
+//   if (!secret) {
+//     console.error('Missing jwt secret')
+//     return res.status(500).json({ message: 'Server configuration error' })
+//   }
+
+//   //check jwt exists & is verified
+//   // check if token exists & is verified
+//   if (jwtToken) {
+//     console.log('token exists!')
+
+//     jwt.verify(jwtToken, secret, (err: VerifyErrors | null, decodedToken?: string | JwtPayload) => {
+//       if (err) {
+//         console.log('error trying to verify jwt in requireAuthenticated', err)
+//         res.status(401).json({ message: 'Unauthorized: Invalid token' })
+//       } else {
+//         console.log('Here is the decoded token:', decodedToken)
+
+//         next() //this takes us to next step after middleware
+//       }
+//     })
+//   } else {
+//     console.log('error, no token to use for requireAuthenticated function')
+//     res.status(401).json({ message: 'Unauthorized: No token provided' })
+//   }
+// }

@@ -4,7 +4,6 @@ import mongoose from 'mongoose'
 import { authRouter, itemRouter, shopRouter, userRouter } from './routes'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
-import { requireAuthenticated } from './middleware'
 // import { checkUser } from './middleware'
 
 dotenv.config()
@@ -46,9 +45,6 @@ async function startServer() {
     app.use('/api/shop', shopRouter)
     app.use('/api/user', userRouter)
     app.use('/api/auth', authRouter)
-    app.get('/api/protected', requireAuthenticated, (req, res) => {
-      res.json({ message: 'This is a protected api route yeeeeeah, only logged in can see' })
-    })
 
     app.listen(port, () => {
       console.log(`Server is running on http://localhost:${port}`)
