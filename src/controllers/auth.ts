@@ -1,6 +1,6 @@
 import { Response, Request } from 'express'
 import { User } from '../models'
-import { createAccessToken, createRefreshToken } from './jwt'
+import { createAccessToken, createRefreshToken } from './utils'
 import { JwtPayload } from 'jsonwebtoken'
 // import { maxAge } from '../constants/maxAge'
 
