@@ -1,6 +1,5 @@
-import { Response, Request, NextFunction } from 'express'
-import jwt, { JwtPayload, VerifyErrors } from 'jsonwebtoken'
-import { User } from '../models'
+import { Response, NextFunction } from 'express'
+import jwt, { JwtPayload } from 'jsonwebtoken'
 import { extractRefreshTokenFromHeader, extractTokenFromHeader } from '../utils'
 import { ReqWithUserId } from '../interfaces'
 
@@ -50,45 +49,3 @@ const requireAccessToken = (req: ReqWithUserId, res: Response, next: NextFunctio
 }
 
 export { requireAccessToken, requireRefreshToken }
-
-// const requireAuthenticated = (req: Request, res: Response, next: NextFunction) => {
-//   let jwtToken = req.cookies.jwt
-
-//   if (!jwtToken && req.headers.authorization) {
-//     // Split the Authorization header to remove the 'Bearer' prefix
-//     const parts = req.headers.authorization.split(' ')
-
-//     if (parts.length === 2 && parts[0] === 'Bearer') {
-//       jwtToken = parts[1]
-//     }
-//   }
-//   if (!jwtToken) {
-//     return res.status(401).json({ message: 'No token provided' })
-//   }
-
-//   const secret = process.env.ACCESS_TOKEN_SECRET
-//   if (!secret) {
-//     console.error('Missing jwt secret')
-//     return res.status(500).json({ message: 'Server configuration error' })
-//   }
-
-//   //check jwt exists & is verified
-//   // check if token exists & is verified
-//   if (jwtToken) {
-//     console.log('token exists!')
-
-//     jwt.verify(jwtToken, secret, (err: VerifyErrors | null, decodedToken?: string | JwtPayload) => {
-//       if (err) {
-//         console.log('error trying to verify jwt in requireAuthenticated', err)
-//         res.status(401).json({ message: 'Unauthorized: Invalid token' })
-//       } else {
-//         console.log('Here is the decoded token:', decodedToken)
-
-//         next() //this takes us to next step after middleware
-//       }
-//     })
-//   } else {
-//     console.log('error, no token to use for requireAuthenticated function')
-//     res.status(401).json({ message: 'Unauthorized: No token provided' })
-//   }
-// }
