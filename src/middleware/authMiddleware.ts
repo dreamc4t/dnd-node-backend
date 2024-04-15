@@ -28,22 +28,25 @@ const requireRefreshToken = async (req: ReqWithUserId, res: Response, next: Next
   }
 }
 
-const requireAccessToken = (req: Request, res: Response, next: NextFunction) => {
+const requireAccessToken = (req: ReqWithUserId, res: Response, next: NextFunction) => {
   const jwtToken = extractTokenFromHeader(req)
-  if (!jwtToken) return res.status(401).json({ message: 'No access token provided' })
+  if (!jwtToken) {
+    console.log('No access token found in headers, requireAccessToken')
+    return res.status(401).json({ message: 'No access token provided' })
+  }
 
   const secret = process.env.ACCESS_TOKEN_SECRET
   if (!secret) return res.status(500).json({ message: 'No Access token secret found' })
 
-  jwt.verify(jwtToken, secret, (err: VerifyErrors | null, decodedToken?: string | JwtPayload) => {
-    if (err) {
-      console.log('error trying to verify jwt in requireAccessToken', err)
-      res.status(401).json({ message: 'Unauthorized: Invalid token' })
-    } else {
-      console.log('requireAccessToken passed! Here is the decoded token:', decodedToken)
-      next()
-    }
-  })
+  try {
+    const decodedToken = jwt.verify(jwtToken, secret) as TokenPayload
+    if (!decodedToken?.id) throw new Error('Invalid token: ID not found')
+    req.userId = decodedToken.id
+    next()
+  } catch (error) {
+    console.log('error trying to verify jwt in requireAccessToken', error)
+    res.status(401).json({ message: 'Unauthorized: Invalid token' })
+  }
 }
 
 // DENNA körs på varje verify just nu, spana in
