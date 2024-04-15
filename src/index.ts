@@ -50,30 +50,4 @@ async function startServer() {
   } catch (error) {}
 }
 
-// mongoose
-//   .connect(mongoURI)
-//   .then(() => {
-//     console.log('Connected to MongoDB')
-//   })
-//   .catch((error) => {
-//     console.log('Error connecting to MongoDB ' + error)
-//   })
-
-// app.get('/', (req: Request, res: Response) => {
-//   res.send('Express + TypeScript Server')
-// })
-
-// app.listen(port, () => {
-//   console.log(`Server is running on http://localhost:${port}`)
-// })
-
-// app.use('/api/item', itemRouter)
-// app.use('/api/shop', shopRouter)
-
-// app.use('/api/user', userRouter)
-
-// app.get('/api/protected', requireAuthenticated, (req, res) => {
-//   res.json({ message: 'This is a protected api route yeeeeeah, only logged in can see' })
-// })
-
 startServer()
