@@ -2,6 +2,7 @@ import { Response, Request } from 'express'
 import { User } from '../models'
 import { createAccessToken, createRefreshToken } from './utils'
 import { JwtPayload } from 'jsonwebtoken'
+import { ACCESS_TOKEN_EXP_TIME_MS } from '../constants'
 // import { maxAge } from '../constants/maxAge'
 
 // TODO BEFORE PUBLISH
@@ -19,8 +20,6 @@ interface RequestWithBody extends Request {
 interface RequestWithUserId extends Request {
   userId?: string | JwtPayload
 }
-
-// const EXPIRE_TIME = 1000 * 20 // 1000 milliseconds
 
 async function signup(req: RequestWithBody, res: Response) {
   try {
@@ -71,8 +70,8 @@ async function signup(req: RequestWithBody, res: Response) {
 }
 
 const login = async (req: Request, res: Response) => {
-  console.log('Logging in user')
   const { username, password } = req.body
+  console.log('Logging in user', username)
 
   try {
     const user = await User.login(username, password)
@@ -88,7 +87,7 @@ const login = async (req: Request, res: Response) => {
       backendTokens: {
         accessToken,
         refreshToken,
-        // expiresIn: new Date(new Date().getTime() + EXPIRE_TIME),
+        accessTokenExpiryDate: new Date().setTime(new Date().getTime() + ACCESS_TOKEN_EXP_TIME_MS),
       },
     })
   } catch (error) {
@@ -100,18 +99,20 @@ const login = async (req: Request, res: Response) => {
 }
 
 const refreshToken = async (req: RequestWithUserId, res: Response) => {
+  console.log('refreshing tokens')
+
   try {
     const user = await User.findById(req.userId)
     if (!user) {
       return res.status(404).json({ message: 'User not found' })
     }
-    const accessToken = createAccessToken(user._id)
-    const refreshToken = createRefreshToken(user._id)
+    const newAccessToken = createAccessToken(user._id)
+    const newRefreshToken = createRefreshToken(user._id)
 
     res.status(200).json({
-      accessToken,
-      refreshToken,
-      // expiresIn: new Date(new Date().getTime() + EXPIRE_TIME),
+      accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
+      accessTokenExpiryDate: new Date().setTime(new Date().getTime() + ACCESS_TOKEN_EXP_TIME_MS),
     })
   } catch (error) {
     const message = (error as Error).message

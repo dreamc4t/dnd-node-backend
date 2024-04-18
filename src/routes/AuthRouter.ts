@@ -6,6 +6,6 @@ const authRouter = Router()
 
 authRouter.post('/signup', signup)
 authRouter.post('/login', login)
-authRouter.get('/refresh', requireRefreshToken, refreshToken)
+authRouter.post('/refresh', requireRefreshToken, refreshToken)
 
 export { authRouter }
