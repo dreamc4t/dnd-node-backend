@@ -3,7 +3,6 @@ import { User } from '../models'
 import { createAccessToken, createRefreshToken } from './utils'
 import { JwtPayload } from 'jsonwebtoken'
 import { ACCESS_TOKEN_EXP_TIME_MS } from '../constants'
-// import { maxAge } from '../constants/maxAge'
 
 // TODO BEFORE PUBLISH
 // more user friendly error messages
@@ -39,29 +38,6 @@ async function signup(req: RequestWithBody, res: Response) {
         refreshToken,
       },
     })
-    // res.status(201).json({ user: user._id })
-
-    // Denna är deras egna docs  https://mongoosejs.com/docs/typescript.html
-    // const userDoc = new User({
-    //   username,
-    //   password: hashedPassword,
-    // })
-
-    // const refreshTokenDoc = new RefreshToken({
-    //   owner: userDoc.id,
-    // })
-
-    // await userDoc.save()
-    // await refreshTokenDoc.save()
-
-    // const refreshToken = createRefreshToken(userDoc.id, refreshTokenDoc.id)
-    // const accessToken = createAccessToken(userDoc.id)
-
-    // res.json({
-    //   id: userDoc.id,
-    //   accessToken,
-    //   refreshToken,
-    // })
   } catch (error) {
     const message = (error as Error).message
     console.log(message)
