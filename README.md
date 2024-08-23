@@ -1,1 +1,1 @@
-Simple backend in node for dnd-app
+Backend in node with auth
