@@ -4,10 +4,9 @@ import { createAccessToken, createRefreshToken } from './utils'
 import { JwtPayload } from 'jsonwebtoken'
 import { ACCESS_TOKEN_EXP_TIME_MS } from '../constants'
 
-// TODO BEFORE PUBLISH
+// TODO potentially
 // more user friendly error messages
 // https://www.youtube.com/watch?v=nukNITdis9g&list=PL4cUxeGkcC9iqqESP8335DA5cRFp8loyp&index=5&ab_channel=NetNinja
-// dont think we need. Message is fine. But in case we want
 
 interface RequestWithBody extends Request {
   body: {
