@@ -1,1 +1,1 @@
-Simple backend in C# for dnd-app
+Simple backend in node for dnd-app
